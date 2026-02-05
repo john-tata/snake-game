@@ -42,7 +42,7 @@ const mobileBackgrounds = [
 
 // ---------------- Responsive Canvas ----------------
 function resizeCanvas() {
-  const factor = isMobile ? 0.8 : 0.9;
+  const factor = isMobile ? 0.95 : 0.9;
   const size = Math.floor(Math.min(window.innerWidth, window.innerHeight) * factor);
   canvas.width = Math.floor(size / CELL) * CELL;
   canvas.height = canvas.width;

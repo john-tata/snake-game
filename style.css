@@ -10,22 +10,27 @@ body {
   background-repeat: no-repeat;
 
   display: flex;
+  flex-direction: column; /* stack title + canvas vertically */
   justify-content: center;
   align-items: center;
+
   font-family: Arial, sans-serif;
   transition: background 0.5s ease; /* smooth gradient change */
 }
 
 /* ---------------- Headings ---------------- */
 h1 {
-  margin-bottom: 10px;
+  margin-bottom: 0 10px 10px 10px;
   color: #fff;
   text-align: center;
   user-select: none;
+  font-size: 2em;
 }
 
 /* ---------------- Canvas ---------------- */
 canvas {
+  max-width: 95vw;
+  max-height: 95vw; /* keep square */
   background: rgba(0,0,0,0.85); /* dark overlay for contrast */
   display: block;
   border-radius: 12px;
