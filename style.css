@@ -26,7 +26,11 @@ h1 {
   user-select: none;
   font-size: 2em;
 }
-
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.5em;
+  }
+}
 /* ---------------- Canvas ---------------- */
 canvas {
   max-width: 95vw;
