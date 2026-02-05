@@ -1,12 +1,10 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const scoreDisplay = document.getElementById('score');
-const leaderboardList = document.getElementById('leaderboardList');
 
 let grid, snake, dx, dy, food, score, count;
 let gameRunning = false;
 let paused = false;
-let leaderboard = [];
 
 // 🔊 Sounds
 const eatSound = new Audio('eat.mp3');
@@ -16,7 +14,7 @@ const pauseSound = new Audio('pause.mp3');
 // --- Responsive canvas ---
 function resizeCanvas() {
   const size = Math.min(window.innerWidth, window.innerHeight) * 0.9;
-  canvas.width = Math.floor(size / 20) * 20; // 🔒 lock to grid
+  canvas.width = Math.floor(size / 20) * 20;
   canvas.height = canvas.width;
   grid = canvas.width / 20;
 }
@@ -25,10 +23,7 @@ resizeCanvas();
 
 // --- Reset game ---
 function resetGame() {
-  snake = [{
-    x: grid * 10,
-    y: grid * 10
-  }];
+  snake = [{ x: grid * 10, y: grid * 10 }];
   dx = 0;
   dy = 0;
   score = 0;
@@ -46,18 +41,18 @@ function placeFood() {
     y: Math.floor(Math.random() * (canvas.height / grid)) * grid
   };
 
-  // avoid spawning on snake
   if (snake.some(s => s.x === food.x && s.y === food.y)) {
     placeFood();
   }
 }
 
-// --- Keyboard ---
+// --- Keyboard (desktop only) ---
 document.addEventListener('keydown', e => {
   if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) {
     e.preventDefault();
   }
 
+  // Pause / resume
   if (e.key === ' ') {
     paused = !paused;
     pauseSound.play();
@@ -102,35 +97,52 @@ canvas.addEventListener('touchend', e => {
   }
 });
 
-// --- Leaderboard ---
-function updateLeaderboard(score) {
-  leaderboard.push(score);
-  leaderboard.sort((a,b) => b - a);
-  leaderboard = leaderboard.slice(0,5);
+// --- Draw start / pause overlay ---
+function drawOverlay(text) {
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  leaderboardList.innerHTML = '';
-  leaderboard.forEach(s => {
-    const li = document.createElement('li');
-    li.textContent = s;
-    leaderboardList.appendChild(li);
-  });
+  ctx.fillStyle = '#fff';
+  ctx.font = `${grid}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 }
 
 // --- Game loop ---
 function gameLoop() {
   requestAnimationFrame(gameLoop);
-  if (!gameRunning || paused) return;
-  if (++count < 15) return;
-  count = 0;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // draw food
+  ctx.fillStyle = 'red';
+  ctx.fillRect(food.x, food.y, grid - 1, grid - 1);
+
+  // draw snake
+  ctx.fillStyle = 'lime';
+  snake.forEach(s => ctx.fillRect(s.x, s.y, grid - 1, grid - 1));
+
+  // overlays
+  if (!gameRunning) {
+    drawOverlay('Swipe to start');
+    return;
+  }
+
+  if (paused) {
+    drawOverlay('Paused');
+    return;
+  }
+
+  if (++count < 15) return;
+  count = 0;
 
   const head = {
     x: snake[0].x + dx,
     y: snake[0].y + dy
   };
 
-  // ✅ correct wall collision
+  // wall / self collision
   if (
     head.x < 0 ||
     head.y < 0 ||
@@ -139,14 +151,12 @@ function gameLoop() {
     snake.some(s => s.x === head.x && s.y === head.y)
   ) {
     gameOverSound.play();
-    updateLeaderboard(score);
     resetGame();
     return;
   }
 
   snake.unshift(head);
 
-  // ✅ food collision now PERFECT
   if (head.x === food.x && head.y === food.y) {
     score++;
     eatSound.play();
@@ -155,12 +165,6 @@ function gameLoop() {
   } else {
     snake.pop();
   }
-
-  ctx.fillStyle = 'red';
-  ctx.fillRect(food.x, food.y, grid - 1, grid - 1);
-
-  ctx.fillStyle = 'lime';
-  snake.forEach(s => ctx.fillRect(s.x, s.y, grid - 1, grid - 1));
 }
 
 resetGame();
