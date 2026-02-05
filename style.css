@@ -1,7 +1,9 @@
+/* ---------------- Body ---------------- */
 body {
   margin: 0;
   min-height: 100vh;
 
+  /* fallback background for mobile will be overridden by JS gradients */
   background-image: url("./images/level1.jpeg");
   background-size: cover;
   background-position: center;
@@ -10,28 +12,45 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: Arial, sans-serif;
+  transition: background 0.5s ease; /* smooth gradient change */
 }
 
+/* ---------------- Headings ---------------- */
 h1 {
   margin-bottom: 10px;
   color: #fff;
+  text-align: center;
+  user-select: none;
 }
 
+/* ---------------- Canvas ---------------- */
 canvas {
-  background: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0.85); /* dark overlay for contrast */
   display: block;
-  margin: 10px auto;
   border-radius: 12px;
-  touch-action: none;
+  touch-action: none; /* disables scroll & pinch on mobile */
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
+/* ---------------- Info / Score ---------------- */
 .info {
   font-size: 18px;
   margin-bottom: 10px;
   color: #fff;
+  text-align: center;
+  user-select: none;
 }
 
-/* Removed mobile arrow controls entirely */
+/* ---------------- Mobile Controls ---------------- */
 .mobile-controls {
-  display: none;
+  display: none; /* removed completely since gestures are used */
+}
+
+/* ---------------- Optional responsive adjustments ---------------- */
+@media (max-width: 768px) {
+  canvas {
+    max-width: 90vw;
+    max-height: 90vw;
+  }
 }
