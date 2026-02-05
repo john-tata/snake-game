@@ -6,10 +6,22 @@ let grid, snake, dx, dy, food, score, count;
 let gameRunning = false;
 let paused = false;
 
+// 🔥 Speed & levels
+let level = 1;
+let speed = 15; // lower = faster
+
 // 🔊 Sounds
 const eatSound = new Audio('eat.mp3');
 const gameOverSound = new Audio('gameover.mp3');
 const pauseSound = new Audio('pause.mp3');
+
+// --- Backgrounds per level ---
+const backgrounds = [
+  'bg1.jpeg',
+  'bg2.jpeg',
+  'bg3.jpeg',
+  'bg4.jpeg'
+];
 
 // --- Responsive canvas ---
 function resizeCanvas() {
@@ -27,10 +39,13 @@ function resetGame() {
   dx = 0;
   dy = 0;
   score = 0;
+  level = 1;
+  speed = 15;
   count = 0;
   gameRunning = false;
   paused = false;
   scoreDisplay.textContent = score;
+  updateBackground();
   placeFood();
 }
 
@@ -46,13 +61,18 @@ function placeFood() {
   }
 }
 
-// --- Keyboard (desktop only) ---
+// --- Change background ---
+function updateBackground() {
+  document.body.style.backgroundImage =
+    `url(${backgrounds[(level - 1) % backgrounds.length]})`;
+}
+
+// --- Keyboard (desktop) ---
 document.addEventListener('keydown', e => {
   if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) {
     e.preventDefault();
   }
 
-  // Pause / resume
   if (e.key === ' ') {
     paused = !paused;
     pauseSound.play();
@@ -97,7 +117,7 @@ canvas.addEventListener('touchend', e => {
   }
 });
 
-// --- Draw start / pause overlay ---
+// --- Overlay ---
 function drawOverlay(text) {
   ctx.fillStyle = 'rgba(0,0,0,0.6)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -107,6 +127,16 @@ function drawOverlay(text) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+}
+
+// --- Level up ---
+function checkLevelUp() {
+  const newLevel = Math.floor(score / 5) + 1;
+  if (newLevel !== level) {
+    level = newLevel;
+    speed = Math.max(6, 15 - level * 2); // cap speed
+    updateBackground();
+  }
 }
 
 // --- Game loop ---
@@ -123,7 +153,6 @@ function gameLoop() {
   ctx.fillStyle = 'lime';
   snake.forEach(s => ctx.fillRect(s.x, s.y, grid - 1, grid - 1));
 
-  // overlays
   if (!gameRunning) {
     drawOverlay('Swipe to start');
     return;
@@ -134,7 +163,7 @@ function gameLoop() {
     return;
   }
 
-  if (++count < 15) return;
+  if (++count < speed) return;
   count = 0;
 
   const head = {
@@ -142,7 +171,6 @@ function gameLoop() {
     y: snake[0].y + dy
   };
 
-  // wall / self collision
   if (
     head.x < 0 ||
     head.y < 0 ||
@@ -161,6 +189,7 @@ function gameLoop() {
     score++;
     eatSound.play();
     scoreDisplay.textContent = score;
+    checkLevelUp();
     placeFood();
   } else {
     snake.pop();

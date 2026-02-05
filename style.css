@@ -1,5 +1,8 @@
 body {
-  background: #f0f0f0;
+  background-color: #000;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   font-family: Arial, sans-serif;
   text-align: center;
   margin: 0;
@@ -8,20 +11,21 @@ body {
 
 h1 {
   margin-bottom: 10px;
-  color: #222;
+  color: #fff;
 }
 
 canvas {
-  background: #111;
+  background: rgba(0,0,0,0.85);
   display: block;
   margin: 10px auto;
-  border-radius: 8px;
-  touch-action: none; /* 🔥 no scrolling */
+  border-radius: 12px;
+  touch-action: none;
 }
 
 .info {
   font-size: 18px;
   margin-bottom: 10px;
+  color: #fff;
 }
 
 /* Removed mobile arrow controls entirely */
